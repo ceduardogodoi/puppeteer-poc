@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake Log In</title>
+    <style>
+      .online-friends {
+        border: 1px solid #000;
+        display: none;
+      }
+      .ready {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <input id="email" name="email" type="email" />
+      <input id="pass" name="pass" type="password" />
+      <button id="submit" type="submit" onclick="logIn(event)">Entrar</button>
+    </form>
+
+    <div class="online-friends"></div>
+
+    <script>
+      async function logIn(event) {
+        event.preventDefault();
+
+        const email = document.querySelector('#email').value;
+        const pass = document.querySelector('#pass').value;
+
+        let onlineFriends = null;
+
+        try {
+          alert('Aguarde enquantos buscamos seus amigos online');
+
+          const response = await fetch('http://localhost:3000', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, pass })
+          });
+
+          onlineFriends = await response.json();
+        } catch (error) {
+          alert('Houve um erro ao solicitar os dados do Facebook');
+        }
+
+        if (onlineFriends) {
+          alert('Exibindo agora sua lista de amigos');
+
+          const div = document.querySelector('.online-friends');
+          div.classList.add('ready');
+
+          const ul = document.createElement('ul');
+
+          div.appendChild(ul);
+
+          onlineFriends
+            .map(item => {
+              if (!item.match(/\d/)) {
+                return item;
+              }
+
+              return item.split(/\d+\s(min|h)\s/, 3)[2];
+            })
+            .forEach(onlineFriend => {
+              const li = document.createElement('li');
+              li.textContent = onlineFriend;
+
+              ul.appendChild(li);
+            });
+        }
+      }
+    </script>
+  </body>
+</html>
