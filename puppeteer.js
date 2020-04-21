@@ -1,10 +1,10 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 async function main(email, pass) {
   try {
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--window-size=1440,900']
+      headless: false,
+      args: ["--window-size=1440,900"],
     });
 
     const context = browser.defaultBrowserContext();
@@ -12,35 +12,35 @@ async function main(email, pass) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900 });
 
-    await page.goto('https://facebook.com');
+    await page.goto("https://facebook.com");
 
-    await page.waitForSelector('input[data-testid=royal_email]', {
-      visible: true
+    await page.waitForSelector("input[data-testid=royal_email]", {
+      visible: true,
     });
-    await page.click('input[data-testid=royal_email]' || '#email');
-    await page.type('#email', email);
+    await page.click("input[data-testid=royal_email]" || "#email");
+    await page.type("#email", email);
 
-    await page.waitForSelector('input[data-testid=royal_pass]' || '#pass', {
-      visible: true
+    await page.waitForSelector("input[data-testid=royal_pass]" || "#pass", {
+      visible: true,
     });
-    await page.click('input[data-testid=royal_pass]' || '#pass');
-    await page.type('input[data-testid=royal_pass]', pass);
+    await page.click("input[data-testid=royal_pass]" || "#pass");
+    await page.type("input[data-testid=royal_pass]", pass);
 
-    await page.waitForSelector('input[data-testid=royal_login_button]', {
-      visible: true
+    await page.waitForSelector("input[data-testid=royal_login_button]", {
+      visible: true,
     });
-    await page.click('input[data-testid=royal_login_button]');
+    await page.click("input[data-testid=royal_login_button]");
 
     const url = page.url();
 
-    await context.overridePermissions(url, ['notifications']);
+    await context.overridePermissions(url, ["notifications"]);
 
     const ulNames = await page.waitForXPath(
-      '//div[text()="CONTATOS"]/ancestor::div/following-sibling::ul',
+      '//div[@class="fbChatOrderedList clearfix"]/div/div[4]/ul',
       { visible: true }
     );
-    const names = await ulNames.$$eval('li', li =>
-      li.map(item => item.innerText)
+    const names = await ulNames.$$eval("li", (li) =>
+      li.map((item) => item.innerText)
     );
 
     // const r = await page.evaluate(list => {
